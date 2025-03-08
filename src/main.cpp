@@ -5,7 +5,7 @@ Cs2* cs2 = new Cs2;
 
 int main() {
 	cs2->Start();
-	//Sleep(3000);
+	Sleep(3000);
 	//if (!fivem->Overlay()) {
 	//	Logging::error_print("cant initializing and injecting the overlay");
 	//}

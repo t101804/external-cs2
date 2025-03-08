@@ -111,6 +111,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -140,6 +141,7 @@
     <ClInclude Include="ext\ImGui 1.90\imstb_truetype.h" />
     <ClInclude Include="ext\SimpleMath\SimpleMath.h" />
     <ClInclude Include="src\Game\Cs2\game.h" />
+    <ClInclude Include="src\Game\Entity\entity.h" />
     <ClInclude Include="src\Game\globals.hpp" />
     <ClInclude Include="src\Game\Sdk\sdk.h" />
     <ClInclude Include="src\Utils\Config\config.h" />
@@ -159,6 +161,7 @@
     <ClCompile Include="ext\ImGui 1.90\imgui_tables.cpp" />
     <ClCompile Include="ext\ImGui 1.90\imgui_widgets.cpp" />
     <ClCompile Include="src\Game\Cs2\game.cpp" />
+    <ClCompile Include="src\Game\Entity\entity.cpp" />
     <ClCompile Include="src\Game\Sdk\sdk.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Utils\Config\config.cpp" />

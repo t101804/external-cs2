@@ -1,14 +1,20 @@
 #pragma once
 
 #include "Sdk/sdk.h"
+#include "Entity/entity.h"
 
 #define MAX_ENTITIES_IN_LIST 512
 #define MAX_ENTITY_LISTS 64
 #define MAX_TOTAL_ENTITIES MAX_ENTITIES_IN_LIST*MAX_ENTITY_LISTS
 
+
+
 namespace Globals {
 	
+	EntityController Controller;
+
 	inline void EntityRenderUpdate() {
+		
 		// do something
 		while (GlobalsConfig.Run) {
 			uintptr_t entityList = read_mem<uintptr_t>(Cs2::client_dll + Sdk::offsets::client_dll::dwEntityList);
@@ -17,11 +23,11 @@ namespace Globals {
 				if (!listEntry) {
 					continue;
 				}
-				uintptr_t currentController = read_mem<uintptr_t>(listEntry+120*(i&0x1FF));
-				if (!currentController) {
+				Controller.currentController = read_mem<uintptr_t>(listEntry+120*(i&0x1FF));
+				if (!Controller.currentController) {
 					continue;
 				}
-				uint32_t pawnHandle = read_mem<uint32_t>(currentController + Sdk::schemas::client_dll::CCSPlayerController::m_hPlayerPawn);
+				uint32_t pawnHandle = read_mem<uint32_t>(Controller.currentController + Sdk::schemas::client_dll::CCSPlayerController::m_hPlayerPawn);
 				if (!pawnHandle) {
 					continue;
 				}
@@ -29,12 +35,15 @@ namespace Globals {
 				if (!listEntry2) {
 					continue;
 				}
-				uintptr_t currentPawn = read_mem<uintptr_t>(listEntry2 + 120 * (pawnHandle & 0x1FF));
-				if (!currentPawn) {
+				Controller.currentPawn = read_mem<uintptr_t>(listEntry2 + 120 * (pawnHandle & 0x1FF));
+				if (!Controller.currentPawn) {
 					continue;
 				}
-				int Health = read_mem<int>(currentPawn + Sdk::schemas::client_dll::C_BaseEntity::m_iHealth);
-				Logging::debug_print("Health: %d", Health);
+						
+				Entity entity = Entity();
+				entity.Controller = Controller;
+				entity.Update();
+
 				// do something
 			}
 		}
