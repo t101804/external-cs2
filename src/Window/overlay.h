@@ -37,9 +37,14 @@ private:
 	bool CreateOverlay();
 	bool ApplyWindowStyles();
 	bool InitDevice();
+	void CleanupDeviceD3D();
+
+	void RenderManager();
+	void CleanupRenderTarget();
 	void init_render_target();
 	void LoadStyle();
 public:
 	bool InitOverlay(const std::wstring targetName, int overlayMode);
 	void OverlayLoop();
+	void DestroyOverlay();
 };

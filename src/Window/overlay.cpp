@@ -6,9 +6,9 @@ ID3D11DeviceContext* g_pd3dDeviceContext = NULL;
 
 
 
-void CleanupDeviceD3D();
+// void CleanupDeviceD3D();
 void CreateRenderTarget();
-void CleanupRenderTarget();
+//void CleanupRenderTarget();
 bool CreateDeviceD3D(HWND hWnd);
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -180,9 +180,9 @@ bool Overlay::InitDevice() {
     D3D_FEATURE_LEVEL vFeatureLevel;
     D3D_FEATURE_LEVEL vFeatureLevelArray[2] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_0, };
 
-    if (D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, vFeatureLevelArray, 2, D3D11_SDK_VERSION, &vSwapChainDesc, &swap_chain, &d3d_device, &vFeatureLevel, &device_context) != S_OK)
+    if (D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, vFeatureLevelArray, 2, D3D11_SDK_VERSION, &vSwapChainDesc, &swap_chain, &d3d_device, &vFeatureLevel, &device_context) != S_OK) {
         return false;
-
+    }
     init_render_target();
 
     ShowWindow(Hwnd, SW_SHOWNORMAL);
@@ -195,8 +195,8 @@ void Overlay::init_render_target() {
 	swap_chain->GetBuffer(0, IID_PPV_ARGS(&vBackBuffer));
 	if (vBackBuffer) {
 		d3d_device->CreateRenderTargetView(vBackBuffer, NULL, &render_target_view);
-	/*	Logging::error_print("cant init render target");
-		return;*/
+		Logging::debug_print("creating render target view");
+
 	}
     /*swap_chain->CreateRenderTargetView(vBackBuffer, NULL, &render_target_view);*/
     // todo: error here if it can't get the backbuffer of the render target
@@ -213,50 +213,148 @@ bool Overlay::ApplyWindowStyles() {
 		Logging::error_print("cant apply window styles");
 		return false;
 	}
+	LoadStyle();
 	return true;
-
 }
 
+void Overlay::CleanupRenderTarget() {
+	if (render_target_view) { render_target_view->Release(); render_target_view = NULL; }
+}
+void Overlay::CleanupDeviceD3D()
+{
+
+    CleanupRenderTarget();
+
+    if (swap_chain) { swap_chain->Release(); swap_chain = NULL; }
+    if (device_context) { device_context->Release(); device_context = NULL; }
+    if (d3d_device) { d3d_device->Release(); d3d_device = NULL; }
+}
+
+void Overlay::DestroyOverlay() {
+    ImGui_ImplDX11_Shutdown();
+    ImGui_ImplWin32_Shutdown();
+    ImGui::DestroyContext();
+    CleanupDeviceD3D();
+    DestroyWindow(Hwnd);
+    UnregisterClassA(wc.lpszClassName, wc.hInstance);
+}
+
+bool IsKeyDown(int VK)
+{
+    return (GetAsyncKeyState(VK) & 0x8000) != 0;
+}
+
+
+// what where we are render so if we render in cs2 render in cs2
+void Overlay::RenderManager() {
+    /*HWND CheckHwnd = FindWindowA(targetName, nullptr);
+    if (!CheckHwnd) {
+        GlobalsConfig.Run = false;
+        Logging::error_print("game %s not found", targetName);
+        return;
+    }*/
+    DWORD Flag = NULL;
+    GetWindowDisplayAffinity(Hwnd, &Flag);
+    if (GlobalsConfig.StreamProof && Flag == WDA_NONE)
+        SetWindowDisplayAffinity(Hwnd, WDA_EXCLUDEFROMCAPTURE);
+    else if (!GlobalsConfig.StreamProof && Flag == WDA_EXCLUDEFROMCAPTURE)
+        SetWindowDisplayAffinity(Hwnd, WDA_NONE);
+
+    HWND ForegroundWindow = GetForegroundWindow();
+    LONG TmpLong = GetWindowLong(Hwnd, GWL_EXSTYLE);
+
+   /* if (GlobalsConfig.ShowMenu && MenuStyle != TmpLong)
+        SetWindowLong(Hwnd, GWL_EXSTYLE, WS_EX_LAYERED | WS_EX_TOOLWINDOW | WS_EX_TOPMOST);
+    else if (!GlobalsConfig.ShowMenu && ESPStyle != TmpLong)
+        SetWindowLong(Hwnd, GWL_EXSTYLE, WS_EX_TRANSPARENT | WS_EX_LAYERED | WS_EX_TOOLWINDOW | WS_EX_TOPMOST);*/
+
+    static bool menu_key = false;
+    if (IsKeyDown(GlobalsConfig.MenuKey) && !menu_key)
+    {
+        GlobalsConfig.ShowMenu = !GlobalsConfig.ShowMenu;
+
+        if (GlobalsConfig.ShowMenu && ForegroundWindow != Hwnd)
+            SetForegroundWindow(Hwnd);
+     /*   else if (!GlobalsConfig.ShowMenu && ForegroundWindow != CheckHwnd)
+            SetForegroundWindow(CheckHwnd);*/
+
+        menu_key = true;
+    }
+    else if (!IsKeyDown(GlobalsConfig.MenuKey) && menu_key)
+    {
+        menu_key = false;
+    }
+
+  /*  RECT TmpRect{};
+    POINT TmpPoint{};
+    GetClientRect(CheckHwnd, &TmpRect);
+    ClientToScreen(CheckHwnd, &TmpPoint);*/
+    
+  /*  if (TmpRect.left != GlobalsConfig.GameRect.left || TmpRect.bottom != GlobalsConfig.GameRect.bottom || TmpRect.top != GlobalsConfig.GameRect.top || TmpRect.right != GlobalsConfig.GameRect.right || TmpPoint.x != GlobalsConfig.GamePoint.x || TmpPoint.y != GlobalsConfig.GamePoint.y)
+{*/
+   
+
+	//Logging::debug_print("game rect changed");
+ //   /*GlobalsConfig.GameRect = TmpRect;
+ //   GlobalsConfig.GamePoint = TmpPoint;*/
+ //   RECT TmpRect{ 0 };
+ //   GetClientRect(Hwnd, &TmpRect);
+ //   SetWindowPos(Hwnd, HWND_TOPMOST, TmpRect.left, TmpRect.top, TmpRect.right, TmpRect.bottom, SWP_NOREDRAW);
+
+	//RECT rect{ 0 };
+ //   GetClientRect(CheckHwnd, &rect);
+
+ //   SetWindowPos(Hwnd, HWND_TOPMOST, rect.left, rect.top, rect.right, rect.bottom, SWP_NOREDRAW);
+
+    //}
+ /*   GetClientRect(Hwnd, &rect);
+    SetWindowPos(Hwnd, HWND_TOPMOST, TmpPoint.x, TmpPoint.y, GlobalsConfig.GameRect.right, GlobalsConfig.GameRect.bottom, SWP_NOREDRAW);*/
+
+    
+}
 void Overlay::OverlayLoop() {
-	if (!Hwnd) {
-		Logging::error_print("cant start overlay loop");
-		return;
-	}
-	MSG msg;
-	ZeroMemory(&msg, sizeof(msg));
-	while (msg.message != WM_QUIT)
-	{
-		if (PeekMessage(&msg, Hwnd, 0, 0, PM_REMOVE))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-			continue;
-		}
-		ImGui_ImplDX11_NewFrame();
-		ImGui_ImplWin32_NewFrame();
-		ImGui::NewFrame();
-		ImGui::Begin("Hello, world!");
-		ImGui::Text("This is some useful text.");
-		ImGui::End();
-		ImGui::EndFrame();
-		ImGui::Render();
-		g_pd3dDeviceContext->OMSetRenderTargets(1, &render_target_view, NULL);
-		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-		swap_chain->Present(1, 0);
-	}
-	ImGui_ImplDX11_Shutdown();
-	ImGui_ImplWin32_Shutdown();
-	ImGui::DestroyContext();
-	CleanupDeviceD3D();
-	DestroyWindow(Hwnd);
-	UnregisterClassA(wc.lpszClassName, wc.hInstance);
+    if (!Hwnd) {
+        Logging::error_print("cant start overlay loop");
+        return;
+    }
+    while (GlobalsConfig.Run) {
+        MSG msg;
+        const float clear_color_with_alpha[4] = { 0.f, 0.f, 0.f, 0.f };
+
+        if (::PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE)) {
+            ::TranslateMessage(&msg);
+            ::DispatchMessage(&msg);
+        }
+        RECT rect{ 0 };
+        GetClientRect(Hwnd, &rect);
+        SetWindowPos(Hwnd, HWND_TOPMOST, rect.left, rect.top, rect.right, rect.bottom, SWP_NOREDRAW);
+        //RenderManager("SDL_app");
+        RenderManager();
+        ImGui_ImplDX11_NewFrame();
+        ImGui_ImplWin32_NewFrame();
+        ImGui::NewFrame();
+        // our render cheat
+        // cs2::render();
+        // window_width and window_height
+        float window_width = GetSystemMetrics(SM_CXSCREEN);
+        float window_height = GetSystemMetrics(SM_CYSCREEN);
+        ImGui::GetBackgroundDrawList()->AddCircle(ImVec2(window_width / 2.f, window_height / 2.f), GlobalsConfig.Aim_Fov, GlobalsConfig.Fov_color);
+
+        //ImGui::Text("Hello, world!");
+        ImGui::Render();
+        device_context->OMSetRenderTargets(1, &render_target_view, NULL);
+        device_context->ClearRenderTargetView(render_target_view, clear_color_with_alpha);
+        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+        swap_chain->Present(1, 0);
+    }
+    /*return msg.message != WM_QUIT;*/
 }
 
 bool Overlay::InitOverlay(const std::wstring targetName, int overlayMode) {
     // example usage initOverlay for nvidia: FindWindowA("CEF-OSC-WIDGET", "NVIDIA GeForce Overlay");
-
+    // FindWindowA("CEF-OSC-WIDGET", "NVIDIA GeForce Overlay");
     if (overlayMode == WINDOW_TITLE || overlayMode == WINDOW_CLASS) {
-        Hwnd = WINDOW_TITLE ? FindWindowW(nullptr, targetName.c_str()) : FindWindowW(targetName.c_str(), nullptr);
+        Hwnd = FindWindowW(L"CEF-OSC-WIDGET", targetName.c_str());
 
         if (!Hwnd) {
             Logging::error_print("cant init overlay, target app not found");
@@ -277,11 +375,14 @@ bool Overlay::InitOverlay(const std::wstring targetName, int overlayMode) {
         Logging::error_print("WRONG Mode of initing overlay");
         return false;
     }
-	if (!ApplyWindowStyles()) {
-		return false;
-	}
     if (!InitDevice()) {
+		Logging::error_print("cant init device");
         return false;
     }
+	if (!ApplyWindowStyles()) {
+		Logging::error_print("cant apply window styles");
+		return false;
+	}
+   
 
 }

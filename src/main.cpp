@@ -9,9 +9,17 @@ Overlay* overlay = new Overlay;
 //overlay->DestroyOverlay();
 //delete overlay;
 int main() {
-	overlay->InitOverlay(L"NVIDIA GeForce Overlay", WINDOW_TITLE);
+	if (!overlay->InitOverlay(L"NVIDIA GeForce Overlay", WINDOW_TITLE)) {
+		Logging::error_print("cant initializing and injecting the overlay");
+	}
+	overlay->OverlayLoop();
+
+	Logging::debug_print("destroying overlay");
+	overlay->DestroyOverlay();
+	delete overlay;
+	/*overlay->DestroyOverlay();*/
 	/*cs2->Start();*/
-	Sleep(3000);
+	/*Sleep(3000);*/
 	//if (!fivem->Overlay()) {
 	//	Logging::error_print("cant initializing and injecting the overlay");
 	//}
