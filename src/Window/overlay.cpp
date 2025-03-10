@@ -1,5 +1,6 @@
 // #include <TlHelp32.h>
 #include "overlay.h"
+#include "../Game/Cs2/game.h"
 
 ID3D11Device* g_pd3dDevice = NULL;
 ID3D11DeviceContext* g_pd3dDeviceContext = NULL;
@@ -204,15 +205,28 @@ void Overlay::init_render_target() {
 }
 
 bool Overlay::ApplyWindowStyles() {
-    MARGINS margins = { -1 };
+ /*   MARGINS margins = { -1 };
     margins.cyBottomHeight = margins.cyTopHeight = margins.cxLeftWidth = margins.cxRightWidth = -1;
     DwmExtendFrameIntoClientArea(Hwnd, &margins);
+    SetLayeredWindowAttributes(Hwnd, 0x000000, 0xFF, 0x02);*/
+    auto getInfo = GetWindowLongA(Hwnd, -20);
+    auto changeAttributes = SetWindowLongA(Hwnd, -20, (LONG_PTR)(getInfo | 0x20));
     SetLayeredWindowAttributes(Hwnd, 0x000000, 0xFF, 0x02);
+
     SetWindowPos(Hwnd, HWND_TOPMOST, 0, 0, 0, 0, 0x0002 | 0x0001);
 	if (!Hwnd) {
 		Logging::error_print("cant apply window styles");
 		return false;
 	}
+    RECT client_area{};
+    GetClientRect(Hwnd, &client_area);
+    RECT window_area{};
+    GetWindowRect(Hwnd, &window_area);
+    POINT diff{};
+    ClientToScreen(Hwnd, &diff);
+    const MARGINS margins{ window_area.left + (diff.x - window_area.left), window_area.top + (diff.y - window_area.top), client_area.right, client_area.bottom };
+    DwmExtendFrameIntoClientArea(Hwnd, &margins);
+
 	LoadStyle();
 	return true;
 }
@@ -333,11 +347,15 @@ void Overlay::OverlayLoop() {
         ImGui_ImplDX11_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
-        // our render cheat
-        // cs2::render();
-        // window_width and window_height
         float window_width = GetSystemMetrics(SM_CXSCREEN);
         float window_height = GetSystemMetrics(SM_CYSCREEN);
+        GlobalsConfig.GameRect.right = window_width;
+		GlobalsConfig.GameRect.bottom = window_height;
+        // our render cheat
+        Cs2::Esp();
+        // window_width and window_height
+        //float window_width = GetSystemMetrics(SM_CXSCREEN);
+        //float window_height = GetSystemMetrics(SM_CYSCREEN);
         ImGui::GetBackgroundDrawList()->AddCircle(ImVec2(window_width / 2.f, window_height / 2.f), GlobalsConfig.Aim_Fov, GlobalsConfig.Fov_color);
 
         //ImGui::Text("Hello, world!");
@@ -357,7 +375,7 @@ bool Overlay::InitOverlay(const std::wstring targetName, int overlayMode) {
         Hwnd = FindWindowW(L"CEF-OSC-WIDGET", targetName.c_str());
 
         if (!Hwnd) {
-            Logging::error_print("cant init overlay, target app not found");
+            Logging::error_print("cant init overlay, target %ls app not found", targetName.c_str());
             return false;
         }
 

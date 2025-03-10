@@ -91,8 +91,10 @@ bool WorldToScreen(Matrix ViewMatrix, Vector3& vWorld, Vector2& vOut)
     vec_out.x *= vec_out.z;
     vec_out.y *= vec_out.z;
 
-    const float width = (float)GlobalsConfig.GameRect.right;
-    const float height = (float)GlobalsConfig.GameRect.bottom;
+    const float width = GetSystemMetrics(SM_CXSCREEN);
+    const float height = GetSystemMetrics(SM_CYSCREEN);
+    //const float width = (float)GlobalsConfig.GameRect.right;
+    //const float height = (float)GlobalsConfig.GameRect.bottom;
     float x_temp = width / 2;
     float y_temp = height / 2;
 

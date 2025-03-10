@@ -13,10 +13,13 @@ namespace Globals {
 	
 	EntityController Controller;
 
+	inline std::vector<Entity> EntityList;
+
 	inline void EntityRenderUpdate() {
 		
 		// do something
 		while (GlobalsConfig.Run) {
+			std::vector<Entity> StoredEntity;
 			uintptr_t entityList = read_mem<uintptr_t>(Cs2::client_dll + Sdk::offsets::client_dll::dwEntityList);
 			for (int i = 1; i < MAX_ENTITY_LISTS; i++) {
 				uintptr_t listEntry = read_mem<uintptr_t>(entityList + (8 * (i & 0x7FFF) >> 9) + 16);
@@ -40,12 +43,17 @@ namespace Globals {
 					continue;
 				}
 						
+			
 				Entity entity = Entity();
 				entity.Controller = Controller;
-				entity.Update();
-
-				// do something
+				if (entity.Update()) {
+					entity.Index = i;
+					StoredEntity.push_back(entity);
+				}
 			}
+			EntityList = StoredEntity;
+			StoredEntity.clear();
+			Sleep(500);
 		}
 	}
 }

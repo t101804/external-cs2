@@ -2,13 +2,23 @@
 #include "Game/Cs2/game.h"
 #include "Window/overlay.h"
 
-// Cs2* cs2 = new Cs2;
+ Cs2* cs2 = new Cs2;
 Overlay* overlay = new Overlay;
 
 //overlay->OverlayLoop();
 //overlay->DestroyOverlay();
 //delete overlay;
+
+void startOverlay() {
+	if (!overlay->InitOverlay(L"NVIDIA GeForce Overlay", WINDOW_TITLE)) {
+		Logging::error_print("cant initializing and injecting the overlay");
+	}
+	overlay->OverlayLoop();
+}
 int main() {
+
+	std::thread([&]() { cs2->Start(); }).detach();
+	Sleep(3000);
 	if (!overlay->InitOverlay(L"NVIDIA GeForce Overlay", WINDOW_TITLE)) {
 		Logging::error_print("cant initializing and injecting the overlay");
 	}

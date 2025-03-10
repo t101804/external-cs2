@@ -33,8 +33,8 @@ public:
 	Player player;
 
 public:
-
-	void Update();
+    int Index;
+	bool Update();
 private:
 	inline void GetCurrentPawn() {
 

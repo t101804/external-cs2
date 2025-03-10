@@ -8,6 +8,7 @@ public:
 	static uintptr_t server_dll;
 public:
 	void Start();
+	static void Esp();
 private:
 	bool DetectGame() {
 	
@@ -43,5 +44,27 @@ private:
 		Logging::debug_print("client.dll : %p, server.dll : %p", client_dll, server_dll);
 		return true;
 	}
+
+	inline static void DrawTextWithStroke(const std::string& text, Vector2 position, ImColor textColor = ImColor(255, 255, 255, 255), ImColor strokeColor = ImColor(0, 0, 0, 255), float fontSize = 15.0f)
+	{
+		float strokeThickness = 1.0f;
+		ImVec2 pos = ImVec2(position.x, position.y);
+
+		//ImGui::PushFont(ImGui_Loader::Roboto);
+		// Draw stroke (outline) by rendering the text in 8 surrounding positions (up, down, left, right, and diagonals)
+		ImGui::GetBackgroundDrawList()->AddText(ImVec2(pos.x - strokeThickness, pos.y), strokeColor, text.c_str());
+		ImGui::GetBackgroundDrawList()->AddText(ImVec2(pos.x + strokeThickness, pos.y), strokeColor, text.c_str());
+		ImGui::GetBackgroundDrawList()->AddText(ImVec2(pos.x, pos.y - strokeThickness), strokeColor, text.c_str());
+		ImGui::GetBackgroundDrawList()->AddText(ImVec2(pos.x, pos.y + strokeThickness), strokeColor, text.c_str());
+		ImGui::GetBackgroundDrawList()->AddText(ImVec2(pos.x - strokeThickness, pos.y - strokeThickness), strokeColor, text.c_str());
+		ImGui::GetBackgroundDrawList()->AddText(ImVec2(pos.x + strokeThickness, pos.y - strokeThickness), strokeColor, text.c_str());
+		ImGui::GetBackgroundDrawList()->AddText(ImVec2(pos.x - strokeThickness, pos.y + strokeThickness), strokeColor, text.c_str());
+		ImGui::GetBackgroundDrawList()->AddText(ImVec2(pos.x + strokeThickness, pos.y + strokeThickness), strokeColor, text.c_str());
+
+		// Draw the main text on top
+		ImGui::GetBackgroundDrawList()->AddText(ImVec2(pos.x, pos.y), textColor, text.c_str());
+		//ImGui::PopFont();
+	}
+
 
 };
