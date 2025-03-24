@@ -1,6 +1,9 @@
 #include "../../Utils/Header.h"
 
 
+
+
+
 int ExtractNumber(std::string str) {
     int result = 0;
 
@@ -76,6 +79,33 @@ Vector3 CalcAngle(Vector3 local_cam, Vector3 to_point)
     return vOut;
 }
 
+bool CsWorldToScreen(view_matrix matrix, Vector3& pos, Vector2& out) {
+    out.x = matrix[0][0] * pos.x + matrix[0][1] * pos.y + matrix[0][2] * pos.z + matrix[0][3];
+    out.y = matrix[1][0] * pos.x + matrix[1][1] * pos.y + matrix[1][2] * pos.z + matrix[1][3];
+
+    float w = matrix[3][0] * pos.x + matrix[3][1] * pos.y + matrix[3][2] * pos.z + matrix[3][3];
+
+    if (w < 0.001f)
+        return false;
+
+    float inv_w = 1.f / w;
+    out.x *= inv_w;
+    out.y *= inv_w;
+
+    const ImVec2 size = ImGui::GetIO().DisplaySize;
+
+    float x = size.x * 0.5f;
+    float y = size.y * 0.5f;
+
+    x += 0.5f * out.x * size.x + 0.5f;
+    y -= 0.5f * out.y * size.y + 0.5f;
+
+    out.x = x;
+    out.y = y;
+
+    return true;
+}
+
 bool WorldToScreen(Matrix ViewMatrix, Vector3& vWorld, Vector2& vOut)
 {
     Matrix v = ViewMatrix.Transpose();
@@ -91,15 +121,11 @@ bool WorldToScreen(Matrix ViewMatrix, Vector3& vWorld, Vector2& vOut)
     vec_out.x *= vec_out.z;
     vec_out.y *= vec_out.z;
 
-    const float width = GetSystemMetrics(SM_CXSCREEN);
-    const float height = GetSystemMetrics(SM_CYSCREEN);
-    //const float width = (float)GlobalsConfig.GameRect.right;
-    //const float height = (float)GlobalsConfig.GameRect.bottom;
-    float x_temp = width / 2;
-    float y_temp = height / 2;
+    const ImVec2 size = ImGui::GetIO().DisplaySize;
 
-    vOut.x += x_temp + float(0.5f * vec_out.x * width + 0.5f);
-    vOut.y = y_temp - float(0.5f * vec_out.y * height + 0.5f);
+
+	vOut.x = (size.x * 0.5f * vec_out.x) + (vec_out.x + size.x * 0.5f);
+	vOut.y = (size.y * 0.5f * vec_out.y) + (vec_out.y + size.y * 0.5f);
 
     return true;
 }

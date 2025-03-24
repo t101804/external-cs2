@@ -19,3 +19,13 @@
 
 // use namespace simplemath
 using namespace DirectX::SimpleMath;
+
+
+struct view_matrix {
+    float* operator[](int index)
+    {
+        return matrix[index];
+    }
+
+    float matrix[4][4];
+};

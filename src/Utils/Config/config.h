@@ -37,23 +37,25 @@ struct Cfg
     bool ESP = true;
     bool ESP_Box = true;
     bool ESP_Weapon = true;
-    bool ESP_BoxFilled = false;
+    bool ESP_BoxFilled = true;
     bool ESP_Line = false;
     bool ESP_Name = false;
     bool ESP_Skeleton = true;
     bool ESP_Distance = false;
     bool ESP_HealthBar = true;
-    int ESP_BoxType = 1;
+    int ESP_BoxType = 0;
     float ESP_MaxDistance = 50.f;
     //float ESP_MinDistance = 9999.f
 
     // adjusting Visual
+    ImColor ESP_3D_COLOR = { 1.f, 0.5f, 0.f, 1.f };
     ImColor ESP_NPC_COLOR = { 1.f, 1.f, 1.f, 1.f };
     ImColor ESP_VISIBLE_COLOR = { 1.f, 0.f, 0.f, 1.f };
     ImColor ESP_PLAYER_COLOR = { 1.f, 0.5f, 0.f, 1.f };
     ImColor ESP_GOD_COLOR = { 1.f, 0.f, 0.f, 1.f };
     ImColor ESP_Skeleton_COLOR = { 1.f, 1.f, 1.f, 1.f };
     ImColor ESP_Filled_COLOR = { 0.f, 0.f, 0.f, 0.2f };
+    ImColor ESP_BOX_ColorNotFilled = ImColor(0, 255, 224, 255);
     ImColor FOV_User_COLOR = { 1.f, 1.f, 1.f, 1.f };
     ImColor CrosshairColor = { 0.f, 1.f, 0.f, 1.f };
 

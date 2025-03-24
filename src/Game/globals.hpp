@@ -12,12 +12,10 @@
 namespace Globals {
 	
 	EntityController Controller;
-
+	Matrix ViewMatrix;
 	inline std::vector<Entity> EntityList;
 
-	inline void EntityRenderUpdate() {
-		
-		// do something
+	inline void CacheEntity() {
 		while (GlobalsConfig.Run) {
 			std::vector<Entity> StoredEntity;
 			uintptr_t entityList = read_mem<uintptr_t>(Cs2::client_dll + Sdk::offsets::client_dll::dwEntityList);
@@ -26,7 +24,7 @@ namespace Globals {
 				if (!listEntry) {
 					continue;
 				}
-				Controller.currentController = read_mem<uintptr_t>(listEntry+120*(i&0x1FF));
+				Controller.currentController = read_mem<uintptr_t>(listEntry + 120 * (i & 0x1FF));
 				if (!Controller.currentController) {
 					continue;
 				}
@@ -42,8 +40,8 @@ namespace Globals {
 				if (!Controller.currentPawn) {
 					continue;
 				}
-						
-			
+
+
 				Entity entity = Entity();
 				entity.Controller = Controller;
 				if (entity.Update()) {
@@ -53,7 +51,7 @@ namespace Globals {
 			}
 			EntityList = StoredEntity;
 			StoredEntity.clear();
-			Sleep(500);
+	/*		Sleep(50);*/
 		}
 	}
 }

@@ -140,6 +140,7 @@
     <ClInclude Include="ext\ImGui 1.90\imstb_textedit.h" />
     <ClInclude Include="ext\ImGui 1.90\imstb_truetype.h" />
     <ClInclude Include="ext\SimpleMath\SimpleMath.h" />
+    <ClInclude Include="src\Game\Cs2\Features\Visuals\visual.h" />
     <ClInclude Include="src\Game\Cs2\game.h" />
     <ClInclude Include="src\Game\Entity\entity.h" />
     <ClInclude Include="src\Game\globals.hpp" />
@@ -150,6 +151,7 @@
     <ClInclude Include="src\Utils\Log\color.hpp" />
     <ClInclude Include="src\Utils\Log\log.h" />
     <ClInclude Include="src\Utils\Math\math.h" />
+    <ClInclude Include="src\Window\Menu\menu.h" />
     <ClInclude Include="src\Window\overlay.h" />
   </ItemGroup>
   <ItemGroup>
@@ -160,6 +162,7 @@
     <ClCompile Include="ext\ImGui 1.90\imgui_impl_win32.cpp" />
     <ClCompile Include="ext\ImGui 1.90\imgui_tables.cpp" />
     <ClCompile Include="ext\ImGui 1.90\imgui_widgets.cpp" />
+    <ClCompile Include="src\Game\Cs2\Features\Visuals\visual.cpp" />
     <ClCompile Include="src\Game\Cs2\game.cpp" />
     <ClCompile Include="src\Game\Entity\entity.cpp" />
     <ClCompile Include="src\Game\Sdk\sdk.cpp" />
@@ -168,6 +171,7 @@
     <ClCompile Include="src\Utils\Driver\driver.cpp" />
     <ClCompile Include="src\Utils\Log\log.cpp" />
     <ClCompile Include="src\Utils\Math\math.cpp" />
+    <ClCompile Include="src\Window\Menu\menu.cpp" />
     <ClCompile Include="src\Window\overlay.cpp" />
   </ItemGroup>
   <ItemGroup>

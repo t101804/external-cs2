@@ -21,10 +21,9 @@ class Overlay {
 
 private:
 	// our title and class name of our overlay
-	char Title[32] = "The Overlay";
-	char Class[32] = "WND_CLS";
 
 	HWND m_hwnd;
+	HWND targetHwnd;
 	HWND Hwnd;
 	WNDCLASSEXA wc{};
 
@@ -42,7 +41,10 @@ private:
 	void RenderManager();
 	void CleanupRenderTarget();
 	void init_render_target();
-	void LoadStyle();
+	bool IsKeyDown(int VK)
+	{
+		return (GetAsyncKeyState(VK) & 0x8000) != 0;
+	}
 public:
 	bool InitOverlay(const std::wstring targetName, int overlayMode);
 	void OverlayLoop();

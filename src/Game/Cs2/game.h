@@ -8,7 +8,7 @@ public:
 	static uintptr_t server_dll;
 public:
 	void Start();
-	static void Esp();
+	static void RenderEntity();
 private:
 	bool DetectGame() {
 	

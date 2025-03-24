@@ -10,3 +10,4 @@ extern float DistTo(Vector2 value1, Vector2 value2);
 extern float GetSpeed(Vector3 value);
 extern float GetDistance(Vector3 value1, Vector3 value2);
 extern bool WorldToScreen(Matrix ViewMatrix, Vector3& vWorld, Vector2& vOut);
+extern bool CsWorldToScreen(view_matrix matrix, Vector3& pos, Vector2& out);
